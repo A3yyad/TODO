@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, make_response
 import sqlite3
 from datetime import datetime
 
 app = Flask(__name__)
 
-# Database setup with priority field
+# Database setup with category field
 def init_db():
     conn = sqlite3.connect('/app/data/todo.db')
     cursor = conn.cursor()
@@ -14,14 +14,15 @@ def init_db():
             title TEXT NOT NULL,
             description TEXT,
             priority TEXT DEFAULT 'medium',
+            category TEXT DEFAULT 'personal',
             completed BOOLEAN NOT NULL DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     
-    # Add priority column if it doesn't exist (for migration)
+    # Add category column if it doesn't exist (for migration)
     try:
-        cursor.execute('ALTER TABLE todos ADD COLUMN priority TEXT DEFAULT "medium"')
+        cursor.execute('ALTER TABLE todos ADD COLUMN category TEXT DEFAULT "personal"')
         conn.commit()
     except:
         pass  # Column already exists
@@ -37,11 +38,12 @@ def add_todo():
     title = request.form.get('title')
     description = request.form.get('description', '')
     priority = request.form.get('priority', 'medium')
+    category = request.form.get('category', 'personal')
     
     conn = sqlite3.connect('/app/data/todo.db')
     cursor = conn.cursor()
-    cursor.execute('INSERT INTO todos (title, description, priority) VALUES (?, ?, ?)', 
-                   (title, description, priority))
+    cursor.execute('INSERT INTO todos (title, description, priority, category) VALUES (?, ?, ?, ?)', 
+                   (title, description, priority, category))
     conn.commit()
     conn.close()
     
@@ -50,14 +52,21 @@ def add_todo():
 # READ - Get all todos
 @app.route('/')
 def index():
+    filter_category = request.args.get('category', 'all')
+    
     conn = sqlite3.connect('/app/data/todo.db')
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM todos ORDER BY created_at DESC')
+    
+    if filter_category == 'all':
+        cursor.execute('SELECT * FROM todos ORDER BY created_at DESC')
+    else:
+        cursor.execute('SELECT * FROM todos WHERE category = ? ORDER BY created_at DESC', (filter_category,))
+    
     todos = cursor.fetchall()
     conn.close()
     
-    return render_template('index.html', todos=todos)
+    return render_template('index.html', todos=todos, current_category=filter_category)
 
 # UPDATE - Toggle completion status
 @app.route('/toggle/<int:todo_id>')
@@ -76,11 +85,12 @@ def edit_todo(todo_id):
     title = request.form.get('title')
     description = request.form.get('description', '')
     priority = request.form.get('priority', 'medium')
+    category = request.form.get('category', 'personal')
     
     conn = sqlite3.connect('/app/data/todo.db')
     cursor = conn.cursor()
-    cursor.execute('UPDATE todos SET title = ?, description = ?, priority = ? WHERE id = ?',
-                   (title, description, priority, todo_id))
+    cursor.execute('UPDATE todos SET title = ?, description = ?, priority = ?, category = ? WHERE id = ?',
+                   (title, description, priority, category, todo_id))
     conn.commit()
     conn.close()
     

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskFlow - Professional Task Management</title>
+    <title>TaskFlow Pro - v2.1.0</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -12,17 +12,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        :root {
+        /* Theme Variables */
+        :root[data-theme="dark"] {
             --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
             --secondary-gradient: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
             --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
             --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            --dark-bg: #0f172a;
-            --card-bg: #1e293b;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
             --text-primary: #f1f5f9;
             --text-secondary: #94a3b8;
             --border-color: #334155;
+        }
+        
+        :root[data-theme="light"] {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --secondary-gradient: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+            --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
         }
         
         * {
@@ -33,15 +49,14 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--dark-bg);
+            background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
-            padding: 0;
-            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
         }
         
-        /* Animated Background */
-        body::before {
+        /* Animated Background - Dark Theme Only */
+        body[data-theme="dark"]::before {
             content: '';
             position: fixed;
             top: 0;
@@ -50,8 +65,7 @@
             height: 100%;
             background: 
                 radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(217, 70, 239, 0.1) 0%, transparent 50%);
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
             z-index: -1;
             animation: backgroundShift 20s ease infinite;
         }
@@ -63,10 +77,11 @@
         
         /* Navbar */
         .navbar {
-            background: rgba(30, 41, 59, 0.8);
+            background: var(--bg-secondary);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
             padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         .navbar-brand {
@@ -78,13 +93,32 @@
             background-clip: text;
         }
         
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
         .main-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 2rem 1rem;
         }
         
-        /* Header Section */
+        /* Hero Section */
         .hero-section {
             text-align: center;
             margin-bottom: 3rem;
@@ -110,26 +144,64 @@
         }
         
         @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
+        
+        /* Category Filter Pills */
+        .category-filters {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .category-pill {
+            padding: 0.75rem 1.5rem;
+            border-radius: 30px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .category-pill:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .category-pill.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .category-pill.work { border-color: #6366f1; }
+        .category-pill.work.active { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+        
+        .category-pill.personal { border-color: #8b5cf6; }
+        .category-pill.personal.active { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        
+        .category-pill.shopping { border-color: #ec4899; }
+        .category-pill.shopping.active { background: linear-gradient(135deg, #ec4899, #db2777); }
+        
+        .category-pill.health { border-color: #10b981; }
+        .category-pill.health.active { background: linear-gradient(135deg, #10b981, #059669); }
+        
+        .category-pill.finance { border-color: #f59e0b; }
+        .category-pill.finance.active { background: linear-gradient(135deg, #f59e0b, #d97706); }
         
         /* Stats Cards */
         .stats-grid {
@@ -140,7 +212,7 @@
         }
         
         .stat-card {
-            background: var(--card-bg);
+            background: var(--bg-secondary);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 1.5rem;
@@ -162,12 +234,7 @@
         
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
-        }
-        
-        .stat-card:hover::before {
-            height: 100%;
-            opacity: 0.1;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         }
         
         .stat-icon {
@@ -197,12 +264,12 @@
         
         /* Card Styles */
         .custom-card {
-            background: var(--card-bg);
+            background: var(--bg-secondary);
             border: 1px solid var(--border-color);
             border-radius: 20px;
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
         
         .card-title {
@@ -212,13 +279,6 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-        }
-        
-        .card-title i {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
         
         /* Form Styles */
@@ -232,7 +292,7 @@
         }
         
         .form-control, .form-select {
-            background: rgba(15, 23, 42, 0.5);
+            background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             color: var(--text-primary);
@@ -241,18 +301,13 @@
         }
         
         .form-control:focus, .form-select:focus {
-            background: rgba(15, 23, 42, 0.8);
+            background: var(--bg-secondary);
             border-color: #6366f1;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
             color: var(--text-primary);
         }
         
-        textarea.form-control {
-            resize: vertical;
-            min-height: 100px;
-        }
-        
-        /* Priority Badge Colors */
+        /* Priority Selector */
         .priority-selector {
             display: flex;
             gap: 1rem;
@@ -261,7 +316,6 @@
         
         .priority-option {
             flex: 1;
-            position: relative;
         }
         
         .priority-option input[type="radio"] {
@@ -277,25 +331,18 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 600;
+            background: var(--bg-tertiary);
         }
         
         .priority-option input[type="radio"]:checked + .priority-label {
             border-color: currentColor;
             transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         
-        .priority-label.high {
-            color: #ef4444;
-        }
-        
-        .priority-label.medium {
-            color: #f59e0b;
-        }
-        
-        .priority-label.low {
-            color: #10b981;
-        }
+        .priority-label.high { color: #ef4444; }
+        .priority-label.medium { color: #f59e0b; }
+        .priority-label.low { color: #10b981; }
         
         /* Button Styles */
         .btn-custom {
@@ -327,7 +374,7 @@
         }
         
         .todo-item {
-            background: var(--card-bg);
+            background: var(--bg-secondary);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 1.5rem;
@@ -337,19 +384,13 @@
         }
         
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
         
         .todo-item:hover {
             transform: translateX(5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
         
         .todo-item::before {
@@ -362,24 +403,12 @@
             border-radius: 16px 0 0 16px;
         }
         
-        .todo-item.priority-high::before {
-            background: var(--danger-gradient);
-        }
-        
-        .todo-item.priority-medium::before {
-            background: var(--warning-gradient);
-        }
-        
-        .todo-item.priority-low::before {
-            background: var(--success-gradient);
-        }
+        .todo-item.priority-high::before { background: var(--danger-gradient); }
+        .todo-item.priority-medium::before { background: var(--warning-gradient); }
+        .todo-item.priority-low::before { background: var(--success-gradient); }
         
         .todo-item.completed {
             opacity: 0.6;
-        }
-        
-        .todo-item.completed::before {
-            background: var(--secondary-gradient);
         }
         
         .todo-header {
@@ -410,6 +439,9 @@
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .todo-item.completed .todo-checkbox {
@@ -431,6 +463,7 @@
             color: var(--text-secondary);
             font-size: 0.85rem;
             margin-bottom: 1rem;
+            flex-wrap: wrap;
         }
         
         .meta-item {
@@ -439,51 +472,51 @@
             gap: 0.5rem;
         }
         
+        /* Category Badge */
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        
+        .category-badge.work { background: rgba(99, 102, 241, 0.2); color: #6366f1; }
+        .category-badge.personal { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
+        .category-badge.shopping { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
+        .category-badge.health { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .category-badge.finance { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .category-badge.other { background: rgba(100, 116, 139, 0.2); color: #64748b; }
+        
+        /* Priority Badge */
         .priority-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 1rem;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         
-        .priority-badge.high {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-        
-        .priority-badge.medium {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-        }
-        
-        .priority-badge.low {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
+        .priority-badge.high { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .priority-badge.medium { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .priority-badge.low { background: rgba(16, 185, 129, 0.2); color: #10b981; }
         
         .status-badge {
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 1rem;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         
-        .status-badge.completed {
-            background: rgba(6, 182, 212, 0.2);
-            color: #06b6d4;
-        }
-        
-        .status-badge.pending {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-        }
+        .status-badge.completed { background: rgba(6, 182, 212, 0.2); color: #06b6d4; }
+        .status-badge.pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
         
         /* Action Buttons */
         .todo-actions {
@@ -506,50 +539,22 @@
             gap: 0.5rem;
         }
         
-        .btn-complete {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
+        .btn-complete { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .btn-complete:hover { background: var(--success-gradient); color: white; }
         
-        .btn-complete:hover {
-            background: var(--success-gradient);
-            color: white;
-        }
+        .btn-edit { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .btn-edit:hover { background: var(--warning-gradient); color: white; }
         
-        .btn-edit {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-        }
+        .btn-delete { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .btn-delete:hover { background: var(--danger-gradient); color: white; }
         
-        .btn-edit:hover {
-            background: var(--warning-gradient);
-            color: white;
-        }
-        
-        .btn-delete {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-        
-        .btn-delete:hover {
-            background: var(--danger-gradient);
-            color: white;
-        }
-        
-        .btn-undo {
-            background: rgba(6, 182, 212, 0.2);
-            color: #06b6d4;
-        }
-        
-        .btn-undo:hover {
-            background: var(--secondary-gradient);
-            color: white;
-        }
+        .btn-undo { background: rgba(6, 182, 212, 0.2); color: #06b6d4; }
+        .btn-undo:hover { background: var(--secondary-gradient); color: white; }
         
         /* Edit Form */
         .edit-form {
             display: none;
-            background: rgba(15, 23, 42, 0.5);
+            background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 1.5rem;
@@ -571,27 +576,15 @@
             margin-bottom: 1rem;
         }
         
-        .empty-state h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        
-        .empty-state p {
-            color: var(--text-secondary);
-        }
-        
         /* Version Badge */
         .version-badge {
             position: fixed;
             bottom: 2rem;
             right: 2rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            background: var(--primary-gradient);
             padding: 0.75rem 1.5rem;
             border-radius: 30px;
             font-weight: 700;
-            background: var(--primary-gradient);
             color: white;
             box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
             z-index: 1000;
@@ -599,36 +592,24 @@
         
         /* Responsive */
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .priority-selector {
-                flex-direction: column;
-            }
-            
-            .version-badge {
-                bottom: 1rem;
-                right: 1rem;
-                font-size: 0.85rem;
-            }
+            .hero-title { font-size: 2.5rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .priority-selector { flex-direction: column; }
+            .category-filters { justify-content: flex-start; }
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
     <!-- Navbar -->
     <nav class="navbar sticky-top">
         <div class="container-fluid px-4">
             <span class="navbar-brand">
-                <i class="bi bi-kanban"></i> TaskFlow
+                <i class="bi bi-kanban"></i> TaskFlow Pro
             </span>
-            <span style="color: var(--text-secondary);">
-                <i class="bi bi-person-circle"></i> Welcome Back
-            </span>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <i class="bi bi-sun-fill" id="theme-icon"></i>
+                <span id="theme-text">Light Mode</span>
+            </button>
         </div>
     </nav>
 
@@ -636,9 +617,34 @@
         <!-- Hero Section -->
         <div class="hero-section">
             <h1 class="hero-title">
-                <i class="bi bi-check2-circle"></i> TaskFlow
+                <i class="bi bi-check2-circle"></i> TaskFlow Pro
             </h1>
-            <p class="hero-subtitle">Professional task management for modern teams</p>
+            <p class="hero-subtitle">Professional task management with smart categories</p>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="category-filters">
+            <a href="/?category=all" class="category-pill {% if current_category == 'all' %}active{% endif %}">
+                <i class="bi bi-grid"></i> All Tasks
+            </a>
+            <a href="/?category=work" class="category-pill work {% if current_category == 'work' %}active{% endif %}">
+                <i class="bi bi-briefcase"></i> Work
+            </a>
+            <a href="/?category=personal" class="category-pill personal {% if current_category == 'personal' %}active{% endif %}">
+                <i class="bi bi-person"></i> Personal
+            </a>
+            <a href="/?category=shopping" class="category-pill shopping {% if current_category == 'shopping' %}active{% endif %}">
+                <i class="bi bi-cart"></i> Shopping
+            </a>
+            <a href="/?category=health" class="category-pill health {% if current_category == 'health' %}active{% endif %}">
+                <i class="bi bi-heart-pulse"></i> Health
+            </a>
+            <a href="/?category=finance" class="category-pill finance {% if current_category == 'finance' %}active{% endif %}">
+                <i class="bi bi-currency-dollar"></i> Finance
+            </a>
+            <a href="/?category=other" class="category-pill {% if current_category == 'other' %}active{% endif %}">
+                <i class="bi bi-three-dots"></i> Other
+            </a>
         </div>
 
         <!-- Stats Grid -->
@@ -689,33 +695,44 @@
                                placeholder="Enter your task..." required>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Priority Level</label>
-                        <div class="priority-selector">
-                            <div class="priority-option">
-                                <input type="radio" name="priority" value="high" id="priority-high">
-                                <label for="priority-high" class="priority-label high">
-                                    <i class="bi bi-exclamation-circle-fill"></i><br>High
-                                </label>
-                            </div>
-                            <div class="priority-option">
-                                <input type="radio" name="priority" value="medium" id="priority-medium" checked>
-                                <label for="priority-medium" class="priority-label medium">
-                                    <i class="bi bi-dash-circle-fill"></i><br>Medium
-                                </label>
-                            </div>
-                            <div class="priority-option">
-                                <input type="radio" name="priority" value="low" id="priority-low">
-                                <label for="priority-low" class="priority-label low">
-                                    <i class="bi bi-check-circle-fill"></i><br>Low
-                                </label>
-                            </div>
-                        </div>
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="work">💼 Work</option>
+                            <option value="personal" selected>👤 Personal</option>
+                            <option value="shopping">🛒 Shopping</option>
+                            <option value="health">💚 Health</option>
+                            <option value="finance">💰 Finance</option>
+                            <option value="other">📌 Other</option>
+                        </select>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="description" class="form-label">Description (Optional)</label>
                     <textarea class="form-control" id="description" name="description" 
                               placeholder="Add more details about your task..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Priority Level</label>
+                    <div class="priority-selector">
+                        <div class="priority-option">
+                            <input type="radio" name="priority" value="high" id="priority-high">
+                            <label for="priority-high" class="priority-label high">
+                                <i class="bi bi-exclamation-circle-fill"></i><br>High
+                            </label>
+                        </div>
+                        <div class="priority-option">
+                            <input type="radio" name="priority" value="medium" id="priority-medium" checked>
+                            <label for="priority-medium" class="priority-label medium">
+                                <i class="bi bi-dash-circle-fill"></i><br>Medium
+                            </label>
+                        </div>
+                        <div class="priority-option">
+                            <input type="radio" name="priority" value="low" id="priority-low">
+                            <label for="priority-low" class="priority-label low">
+                                <i class="bi bi-check-circle-fill"></i><br>Low
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 <button type="submit" class="btn-custom btn-primary-gradient">
                     <i class="bi bi-plus-lg"></i> Add Task
@@ -726,7 +743,12 @@
         <!-- Tasks List -->
         <div class="custom-card">
             <h2 class="card-title">
-                <i class="bi bi-list-check"></i> Your Tasks
+                <i class="bi bi-list-check"></i> 
+                {% if current_category == 'all' %}
+                    Your Tasks
+                {% else %}
+                    {{ current_category|capitalize }} Tasks
+                {% endif %}
             </h2>
             
             {% if todos %}
@@ -738,13 +760,28 @@
                                 <a href="/toggle/{{ todo['id'] }}" style="text-decoration: none;">
                                     <div class="todo-checkbox">
                                         {% if todo['completed'] %}
-                                            <i class="bi bi-check-lg" style="color: white; font-size: 1.2rem;"></i>
+                                            <i class="bi bi-check-lg" style="color: white;"></i>
                                         {% endif %}
                                     </div>
                                 </a>
                                 <span>{{ todo['title'] }}</span>
                             </div>
-                            <div class="d-flex gap-2">
+                            <div class="d-flex gap-2 flex-wrap">
+                                <span class="category-badge {{ todo['category'] or 'other' }}">
+                                    {% if todo['category'] == 'work' %}
+                                        <i class="bi bi-briefcase"></i> Work
+                                    {% elif todo['category'] == 'personal' %}
+                                        <i class="bi bi-person"></i> Personal
+                                    {% elif todo['category'] == 'shopping' %}
+                                        <i class="bi bi-cart"></i> Shopping
+                                    {% elif todo['category'] == 'health' %}
+                                        <i class="bi bi-heart-pulse"></i> Health
+                                    {% elif todo['category'] == 'finance' %}
+                                        <i class="bi bi-currency-dollar"></i> Finance
+                                    {% else %}
+                                        <i class="bi bi-three-dots"></i> Other
+                                    {% endif %}
+                                </span>
                                 <span class="priority-badge {{ todo['priority'] or 'medium' }}">
                                     {% if todo['priority'] == 'high' %}
                                         <i class="bi bi-exclamation-circle-fill"></i> High
@@ -808,13 +845,26 @@
                                     <label class="form-label">Edit Description</label>
                                     <textarea class="form-control" name="description">{{ todo['description'] }}</textarea>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Priority Level</label>
-                                    <select class="form-select" name="priority">
-                                        <option value="low" {% if todo['priority'] == 'low' %}selected{% endif %}>🟢 Low Priority</option>
-                                        <option value="medium" {% if todo['priority'] == 'medium' %}selected{% endif %}>🟡 Medium Priority</option>
-                                        <option value="high" {% if todo['priority'] == 'high' %}selected{% endif %}>🔴 High Priority</option>
-                                    </select>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Category</label>
+                                        <select class="form-select" name="category">
+                                            <option value="work" {% if todo['category'] == 'work' %}selected{% endif %}>💼 Work</option>
+                                            <option value="personal" {% if todo['category'] == 'personal' %}selected{% endif %}>👤 Personal</option>
+                                            <option value="shopping" {% if todo['category'] == 'shopping' %}selected{% endif %}>🛒 Shopping</option>
+                                            <option value="health" {% if todo['category'] == 'health' %}selected{% endif %}>💚 Health</option>
+                                            <option value="finance" {% if todo['category'] == 'finance' %}selected{% endif %}>💰 Finance</option>
+                                            <option value="other" {% if todo['category'] == 'other' %}selected{% endif %}>📌 Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Priority Level</label>
+                                        <select class="form-select" name="priority">
+                                            <option value="low" {% if todo['priority'] == 'low' %}selected{% endif %}>🟢 Low</option>
+                                            <option value="medium" {% if todo['priority'] == 'medium' %}selected{% endif %}>🟡 Medium</option>
+                                            <option value="high" {% if todo['priority'] == 'high' %}selected{% endif %}>🔴 High</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="d-flex gap-2">
                                     <button type="submit" class="btn-custom btn-primary-gradient">
@@ -832,8 +882,14 @@
             {% else %}
                 <div class="empty-state">
                     <i class="bi bi-inbox"></i>
-                    <h3>No tasks yet</h3>
-                    <p>Create your first task to get started with TaskFlow</p>
+                    <h3>No tasks found</h3>
+                    <p>
+                        {% if current_category == 'all' %}
+                            Create your first task to get started with TaskFlow Pro
+                        {% else %}
+                            No {{ current_category }} tasks yet. Create one above!
+                        {% endif %}
+                    </p>
                 </div>
             {% endif %}
         </div>
@@ -841,7 +897,7 @@
 
     <!-- Version Badge -->
     <div class="version-badge">
-        <i class="bi bi-tag"></i> v2.0.0
+        <i class="bi bi-tag"></i> v2.1.0
     </div>
 
     <!-- Bootstrap JS -->
@@ -849,12 +905,49 @@
     <script>
         function toggleEdit(id) {
             const editForm = document.getElementById('edit-' + id);
-            if (editForm.style.display === 'none' || editForm.style.display === '') {
-                editForm.style.display = 'block';
+            editForm.style.display = editForm.style.display === 'none' || editForm.style.display === '' ? 'block' : 'none';
+        }
+        
+        // Theme Toggle Function
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                document.documentElement.setAttribute('data-theme', 'light');
+                icon.className = 'bi bi-moon-fill';
+                text.textContent = 'Dark Mode';
+                localStorage.setItem('theme', 'light');
             } else {
-                editForm.style.display = 'none';
+                body.setAttribute('data-theme', 'dark');
+                document.documentElement.setAttribute('data-theme', 'dark');
+                icon.className = 'bi bi-sun-fill';
+                text.textContent = 'Light Mode';
+                localStorage.setItem('theme', 'dark');
             }
         }
+        
+        // Load saved theme on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            
+            body.setAttribute('data-theme', savedTheme);
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            if (savedTheme === 'light') {
+                icon.className = 'bi bi-moon-fill';
+                text.textContent = 'Dark Mode';
+            } else {
+                icon.className = 'bi bi-sun-fill';
+                text.textContent = 'Light Mode';
+            }
+        });
     </script>
 </body>
 </html>
