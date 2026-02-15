@@ -617,6 +617,42 @@
             <a href="/?category=other{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if current_category == 'other' %}active{% endif %}">Other</a>
         </div>
         
+        <!-- Advanced Filters & Sorting -->
+        <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 150px;">
+                <select id="status-filter" class="select" onchange="applyFilters()">
+                    <option value="all" {% if filter_status == 'all' %}selected{% endif %}>All Status</option>
+                    <option value="active" {% if filter_status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="completed" {% if filter_status == 'completed' %}selected{% endif %}>Completed</option>
+                </select>
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+                <select id="priority-filter" class="select" onchange="applyFilters()">
+                    <option value="all" {% if filter_priority == 'all' %}selected{% endif %}>All Priorities</option>
+                    <option value="high" {% if filter_priority == 'high' %}selected{% endif %}>High</option>
+                    <option value="medium" {% if filter_priority == 'medium' %}selected{% endif %}>Medium</option>
+                    <option value="low" {% if filter_priority == 'low' %}selected{% endif %}>Low</option>
+                </select>
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+                <select id="due-filter" class="select" onchange="applyFilters()">
+                    <option value="all" {% if filter_due == 'all' %}selected{% endif %}>All Due Dates</option>
+                    <option value="overdue" {% if filter_due == 'overdue' %}selected{% endif %}>Overdue</option>
+                    <option value="today" {% if filter_due == 'today' %}selected{% endif %}>Due Today</option>
+                    <option value="week" {% if filter_due == 'week' %}selected{% endif %}>Due This Week</option>
+                </select>
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+                <select id="sort-by" class="select" onchange="applyFilters()">
+                    <option value="default" {% if sort_by == 'default' %}selected{% endif %}>Sort: Default</option>
+                    <option value="due_date" {% if sort_by == 'due_date' %}selected{% endif %}>Sort: Due Date</option>
+                    <option value="created_at" {% if sort_by == 'created_at' %}selected{% endif %}>Sort: Created</option>
+                    <option value="priority" {% if sort_by == 'priority' %}selected{% endif %}>Sort: Priority</option>
+                    <option value="alpha" {% if sort_by == 'alpha' %}selected{% endif %}>Sort: A-Z</option>
+                </select>
+            </div>
+        </div>
+        
         <!-- Add Task -->
         <div class="add-task">
             <form action="/add" method="POST">
@@ -786,6 +822,22 @@
         function toggleEdit(id) {
             const form = document.getElementById('edit-' + id);
             form.classList.toggle('active');
+        }
+        
+        function applyFilters() {
+            const status = document.getElementById('status-filter').value;
+            const priority = document.getElementById('priority-filter').value;
+            const due = document.getElementById('due-filter').value;
+            const sort = document.getElementById('sort-by').value;
+            
+            const params = new URLSearchParams(window.location.search);
+            params.set('status', status);
+            params.set('priority', priority);
+            params.set('due', due);
+            params.set('sort', sort);
+            params.delete('page'); // Reset to page 1 when filters change
+            
+            window.location.href = '?' + params.toString();
         }
         
         // Keyboard shortcut: Press / to focus add task
