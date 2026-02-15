@@ -632,6 +632,13 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" name="due_date" class="input">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
                         <label class="form-label">Priority</label>
                         <div class="priority-group">
                             <div class="priority-option">
@@ -676,7 +683,10 @@
                     <div class="task-meta">
                         <span class="task-badge badge-category">{{ todo['category']|capitalize }}</span>
                         <span class="task-badge badge-priority-{{ todo['priority'] or 'medium' }}">{{ todo['priority']|capitalize }}</span>
-                        <span class="task-date">{{ todo['created_at'][:10] }}</span>
+                        {% if todo['due_date'] %}
+                        <span class="task-date">📅 Due: {{ todo['due_date'] }}</span>
+                        {% endif %}
+                        <span class="task-date">Created: {{ todo['created_at'][:10] }}</span>
                     </div>
                     
                     <div id="edit-{{ todo['id'] }}" class="edit-form">
@@ -705,6 +715,10 @@
                                         <option value="high" {% if todo['priority'] == 'high' %}selected{% endif %}>High</option>
                                     </select>
                                 </div>
+                            </div>
+                            <div class="form-group" style="margin-top: 12px;">
+                                <label class="form-label">Due Date</label>
+                                <input type="date" name="due_date" class="input" value="{{ todo['due_date'] or '' }}">
                             </div>
                             <div style="display: flex; gap: 8px; margin-top: 12px;">
                                 <button type="submit" class="btn btn-primary btn-sm">Save</button>

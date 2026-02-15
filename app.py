@@ -15,12 +15,39 @@ def init_db():
             priority TEXT DEFAULT 'medium',
             category TEXT DEFAULT 'personal',
             completed BOOLEAN NOT NULL DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            due_date DATE,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     
+    # Add category column if it doesn't exist (migration)
     try:
         cursor.execute('ALTER TABLE todos ADD COLUMN category TEXT DEFAULT "personal"')
+        conn.commit()
+    except:
+        pass
+    
+    # Add due_date column if it doesn't exist (migration)
+    try:
+        cursor.execute('ALTER TABLE todos ADD COLUMN due_date DATE')
+        conn.commit()
+    except:
+        pass
+    
+    # Add updated_at column if it doesn't exist (migration)
+    try:
+        cursor.execute('ALTER TABLE todos ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP')
+        conn.commit()
+    except:
+        pass
+    
+    # Create indexes for better query performance
+    try:
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_todos_completed ON todos(completed)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_todos_priority ON todos(priority)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_todos_due_date ON todos(due_date)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_todos_category ON todos(category)')
         conn.commit()
     except:
         pass
@@ -35,11 +62,13 @@ def add_todo():
     description = request.form.get('description', '')
     priority = request.form.get('priority', 'medium')
     category = request.form.get('category', 'personal')
+    due_date = request.form.get('due_date', None)
     
     conn = sqlite3.connect('/app/data/todo.db')
     cursor = conn.cursor()
-    cursor.execute('INSERT INTO todos (title, description, priority, category) VALUES (?, ?, ?, ?)', 
-                   (title, description, priority, category))
+    cursor.execute('''INSERT INTO todos (title, description, priority, category, due_date, updated_at) 
+                      VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)''', 
+                   (title, description, priority, category, due_date if due_date else None))
     conn.commit()
     conn.close()
     
@@ -67,7 +96,7 @@ def index():
 def toggle_todo(todo_id):
     conn = sqlite3.connect('/app/data/todo.db')
     cursor = conn.cursor()
-    cursor.execute('UPDATE todos SET completed = NOT completed WHERE id = ?', (todo_id,))
+    cursor.execute('UPDATE todos SET completed = NOT completed, updated_at = CURRENT_TIMESTAMP WHERE id = ?', (todo_id,))
     conn.commit()
     conn.close()
     
@@ -79,11 +108,13 @@ def edit_todo(todo_id):
     description = request.form.get('description', '')
     priority = request.form.get('priority', 'medium')
     category = request.form.get('category', 'personal')
+    due_date = request.form.get('due_date', None)
     
     conn = sqlite3.connect('/app/data/todo.db')
     cursor = conn.cursor()
-    cursor.execute('UPDATE todos SET title = ?, description = ?, priority = ?, category = ? WHERE id = ?',
-                   (title, description, priority, category, todo_id))
+    cursor.execute('''UPDATE todos SET title = ?, description = ?, priority = ?, category = ?, due_date = ?, updated_at = CURRENT_TIMESTAMP 
+                      WHERE id = ?''',
+                   (title, description, priority, category, due_date if due_date else None, todo_id))
     conn.commit()
     conn.close()
     
