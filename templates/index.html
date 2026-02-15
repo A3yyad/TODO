@@ -604,17 +604,21 @@
                 <input type="search" name="q" class="input" placeholder="🔍 Search tasks..." value="{{ search_query or '' }}" style="font-size: 15px;">
             </div>
             <input type="hidden" name="category" value="{{ current_category }}">
+            <input type="hidden" name="status" value="{{ filter_status }}">
+            <input type="hidden" name="priority" value="{{ filter_priority }}">
+            <input type="hidden" name="due" value="{{ filter_due }}">
+            <input type="hidden" name="sort" value="{{ sort_by }}">
         </form>
         
         <!-- Filters -->
         <div class="filters">
-            <a href="/?category=all{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if current_category == 'all' %}active{% endif %}">All</a>
-            <a href="/?category=work{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if current_category == 'work' %}active{% endif %}">Work</a>
-            <a href="/?category=personal{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if current_category == 'personal' %}active{% endif %}">Personal</a>
-            <a href="/?category=shopping{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if current_category == 'shopping' %}active{% endif %}">Shopping</a>
-            <a href="/?category=health{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if current_category == 'health' %}active{% endif %}">Health</a>
-            <a href="/?category=finance{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if current_category == 'finance' %}active{% endif %}">Finance</a>
-            <a href="/?category=other{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if current_category == 'other' %}active{% endif %}">Other</a>
+            <a href="/?category=all{% if search_query %}&q={{ search_query }}{% endif %}{% if filter_status != 'all' %}&status={{ filter_status }}{% endif %}{% if filter_priority != 'all' %}&priority={{ filter_priority }}{% endif %}{% if filter_due != 'all' %}&due={{ filter_due }}{% endif %}{% if sort_by != 'default' %}&sort={{ sort_by }}{% endif %}" class="filter-pill {% if current_category == 'all' %}active{% endif %}">All</a>
+            <a href="/?category=work{% if search_query %}&q={{ search_query }}{% endif %}{% if filter_status != 'all' %}&status={{ filter_status }}{% endif %}{% if filter_priority != 'all' %}&priority={{ filter_priority }}{% endif %}{% if filter_due != 'all' %}&due={{ filter_due }}{% endif %}{% if sort_by != 'default' %}&sort={{ sort_by }}{% endif %}" class="filter-pill {% if current_category == 'work' %}active{% endif %}">Work</a>
+            <a href="/?category=personal{% if search_query %}&q={{ search_query }}{% endif %}{% if filter_status != 'all' %}&status={{ filter_status }}{% endif %}{% if filter_priority != 'all' %}&priority={{ filter_priority }}{% endif %}{% if filter_due != 'all' %}&due={{ filter_due }}{% endif %}{% if sort_by != 'default' %}&sort={{ sort_by }}{% endif %}" class="filter-pill {% if current_category == 'personal' %}active{% endif %}">Personal</a>
+            <a href="/?category=shopping{% if search_query %}&q={{ search_query }}{% endif %}{% if filter_status != 'all' %}&status={{ filter_status }}{% endif %}{% if filter_priority != 'all' %}&priority={{ filter_priority }}{% endif %}{% if filter_due != 'all' %}&due={{ filter_due }}{% endif %}{% if sort_by != 'default' %}&sort={{ sort_by }}{% endif %}" class="filter-pill {% if current_category == 'shopping' %}active{% endif %}">Shopping</a>
+            <a href="/?category=health{% if search_query %}&q={{ search_query }}{% endif %}{% if filter_status != 'all' %}&status={{ filter_status }}{% endif %}{% if filter_priority != 'all' %}&priority={{ filter_priority }}{% endif %}{% if filter_due != 'all' %}&due={{ filter_due }}{% endif %}{% if sort_by != 'default' %}&sort={{ sort_by }}{% endif %}" class="filter-pill {% if current_category == 'health' %}active{% endif %}">Health</a>
+            <a href="/?category=finance{% if search_query %}&q={{ search_query }}{% endif %}{% if filter_status != 'all' %}&status={{ filter_status }}{% endif %}{% if filter_priority != 'all' %}&priority={{ filter_priority }}{% endif %}{% if filter_due != 'all' %}&due={{ filter_due }}{% endif %}{% if sort_by != 'default' %}&sort={{ sort_by }}{% endif %}" class="filter-pill {% if current_category == 'finance' %}active{% endif %}">Finance</a>
+            <a href="/?category=other{% if search_query %}&q={{ search_query }}{% endif %}{% if filter_status != 'all' %}&status={{ filter_status }}{% endif %}{% if filter_priority != 'all' %}&priority={{ filter_priority }}{% endif %}{% if filter_due != 'all' %}&due={{ filter_due }}{% endif %}{% if sort_by != 'default' %}&sort={{ sort_by }}{% endif %}" class="filter-pill {% if current_category == 'other' %}active{% endif %}">Other</a>
         </div>
         
         <!-- Advanced Filters & Sorting -->
@@ -806,11 +810,11 @@
         {% if total_pages > 1 %}
         <div style="display: flex; justify-content: center; gap: 8px; margin-top: 24px;">
             {% if page > 1 %}
-            <a href="/?category={{ current_category }}&page={{ page - 1 }}{% if search_query %}&q={{ search_query }}{% endif %}" class="btn btn-secondary btn-sm">Previous</a>
+            <a href="/?category={{ current_category }}&status={{ filter_status }}&priority={{ filter_priority }}&due={{ filter_due }}&sort={{ sort_by }}&page={{ page - 1 }}{% if search_query %}&q={{ search_query }}{% endif %}" class="btn btn-secondary btn-sm">Previous</a>
             {% endif %}
             <span style="padding: 6px 12px; color: var(--text-secondary); font-size: 13px;">Page {{ page }} of {{ total_pages }}</span>
             {% if page < total_pages %}
-            <a href="/?category={{ current_category }}&page={{ page + 1 }}{% if search_query %}&q={{ search_query }}{% endif %}" class="btn btn-secondary btn-sm">Next</a>
+            <a href="/?category={{ current_category }}&status={{ filter_status }}&priority={{ filter_priority }}&due={{ filter_due }}&sort={{ sort_by }}&page={{ page + 1 }}{% if search_query %}&q={{ search_query }}{% endif %}" class="btn btn-secondary btn-sm">Next</a>
             {% endif %}
         </div>
         {% endif %}
