@@ -77,20 +77,58 @@ def add_todo():
 @app.route('/')
 def index():
     filter_category = request.args.get('category', 'all')
+    search_query = request.args.get('q', '').strip()
+    page = request.args.get('page', 1, type=int)
+    per_page = 50
     
     conn = sqlite3.connect('/app/data/todo.db')
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
-    if filter_category == 'all':
-        cursor.execute('SELECT * FROM todos ORDER BY completed ASC, created_at DESC')
-    else:
-        cursor.execute('SELECT * FROM todos WHERE category = ? ORDER BY completed ASC, created_at DESC', (filter_category,))
+    # Build query based on filters and search
+    query = 'SELECT * FROM todos WHERE 1=1'
+    params = []
     
+    # Apply category filter
+    if filter_category != 'all':
+        query += ' AND category = ?'
+        params.append(filter_category)
+    
+    # Apply search filter
+    if search_query:
+        query += ' AND (title LIKE ? OR description LIKE ?)'
+        search_pattern = f'%{search_query}%'
+        params.extend([search_pattern, search_pattern])
+    
+    # Apply ordering and pagination
+    query += ' ORDER BY completed ASC, created_at DESC LIMIT ? OFFSET ?'
+    params.extend([per_page, (page - 1) * per_page])
+    
+    cursor.execute(query, params)
     todos = cursor.fetchall()
+    
+    # Get total count for pagination
+    count_query = 'SELECT COUNT(*) FROM todos WHERE 1=1'
+    count_params = []
+    if filter_category != 'all':
+        count_query += ' AND category = ?'
+        count_params.append(filter_category)
+    if search_query:
+        count_query += ' AND (title LIKE ? OR description LIKE ?)'
+        count_params.extend([search_pattern, search_pattern])
+    
+    cursor.execute(count_query, count_params)
+    total_count = cursor.fetchone()[0]
+    total_pages = (total_count + per_page - 1) // per_page
+    
     conn.close()
     
-    return render_template('index.html', todos=todos, current_category=filter_category)
+    return render_template('index.html', 
+                         todos=todos, 
+                         current_category=filter_category,
+                         search_query=search_query,
+                         page=page,
+                         total_pages=total_pages)
 
 @app.route('/toggle/<int:todo_id>')
 def toggle_todo(todo_id):

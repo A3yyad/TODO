@@ -598,15 +598,23 @@
             </div>
         </div>
         
+        <!-- Search Bar -->
+        <form method="GET" action="/" style="margin-bottom: 24px;">
+            <div class="form-group">
+                <input type="search" name="q" class="input" placeholder="🔍 Search tasks..." value="{{ search_query or '' }}" style="font-size: 15px;">
+            </div>
+            <input type="hidden" name="category" value="{{ current_category }}">
+        </form>
+        
         <!-- Filters -->
         <div class="filters">
-            <a href="/?category=all" class="filter-pill {% if current_category == 'all' %}active{% endif %}">All</a>
-            <a href="/?category=work" class="filter-pill {% if current_category == 'work' %}active{% endif %}">Work</a>
-            <a href="/?category=personal" class="filter-pill {% if current_category == 'personal' %}active{% endif %}">Personal</a>
-            <a href="/?category=shopping" class="filter-pill {% if current_category == 'shopping' %}active{% endif %}">Shopping</a>
-            <a href="/?category=health" class="filter-pill {% if current_category == 'health' %}active{% endif %}">Health</a>
-            <a href="/?category=finance" class="filter-pill {% if current_category == 'finance' %}active{% endif %}">Finance</a>
-            <a href="/?category=other" class="filter-pill {% if current_category == 'other' %}active{% endif %}">Other</a>
+            <a href="/?category=all{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if current_category == 'all' %}active{% endif %}">All</a>
+            <a href="/?category=work{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if current_category == 'work' %}active{% endif %}">Work</a>
+            <a href="/?category=personal{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if current_category == 'personal' %}active{% endif %}">Personal</a>
+            <a href="/?category=shopping{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if current_category == 'shopping' %}active{% endif %}">Shopping</a>
+            <a href="/?category=health{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if current_category == 'health' %}active{% endif %}">Health</a>
+            <a href="/?category=finance{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if current_category == 'finance' %}active{% endif %}">Finance</a>
+            <a href="/?category=other{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if current_category == 'other' %}active{% endif %}">Other</a>
         </div>
         
         <!-- Add Task -->
@@ -755,6 +763,19 @@
                 <div class="empty-title">No tasks yet</div>
                 <p class="empty-text">Add your first task to get started</p>
             </div>
+        </div>
+        {% endif %}
+        
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <div style="display: flex; justify-content: center; gap: 8px; margin-top: 24px;">
+            {% if page > 1 %}
+            <a href="/?category={{ current_category }}&page={{ page - 1 }}{% if search_query %}&q={{ search_query }}{% endif %}" class="btn btn-secondary btn-sm">Previous</a>
+            {% endif %}
+            <span style="padding: 6px 12px; color: var(--text-secondary); font-size: 13px;">Page {{ page }} of {{ total_pages }}</span>
+            {% if page < total_pages %}
+            <a href="/?category={{ current_category }}&page={{ page + 1 }}{% if search_query %}&q={{ search_query }}{% endif %}" class="btn btn-secondary btn-sm">Next</a>
+            {% endif %}
         </div>
         {% endif %}
     </div>
